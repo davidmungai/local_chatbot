@@ -62,6 +62,17 @@ services:
     networks:
       - esnet
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.2.3
+    container_name: filebeat
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logs:/usr/share/filebeat/logs
+    depends_on:
+      - logstash
+    networks:
+      - esnet
+
 volumes:
   esdata1:
   esdata2:
