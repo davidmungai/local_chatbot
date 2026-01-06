@@ -1,0 +1,71 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.3
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.system_call_filter=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+  elasticsearch2:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.3
+    container_name: elasticsearch2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+      - bootstrap.system_call_filter=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana-oss:6.2.3
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    networks:
+      - esnet
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:6.2.3
+    container_name: logstash
+    volumes:
+      - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+    ports:
+      - "5044:5044"
+      - "5001:5001"
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+
+volumes:
+  esdata1:
+  esdata2:
+
+
+networks:
+  esnet:
