@@ -8,7 +8,7 @@ from langchain_ollama import OllamaLLM
 from langchain_classic.chains import RetrievalQA
 
 
-PDF_PATH = "data/NIPS-2017-attention-is-all-you-need-Paper.pdf"   # <-- change this
+PDF_PATH = "data/NIPS-2017-attention-is-all-you-need-Paper.pdf"  
 ES_URL = "http://localhost:9200"
 INDEX_NAME = "pdf-rag"
 OLLAMA_BASE_URL = "http://localhost:11434"
